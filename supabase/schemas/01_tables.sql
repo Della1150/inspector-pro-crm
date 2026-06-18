@@ -49,7 +49,24 @@ create table public.contacts (
     sales_id bigint,
     linkedin_url text,
     email_jsonb jsonb,
-    phone_jsonb jsonb
+    phone_jsonb jsonb,
+    brokerage text,
+    phone text,
+    email text,
+    website text,
+    facebook_url text,
+    instagram_url text,
+    google_business_url text,
+    follow_up_date date,
+    freebie_delivered boolean not null default false,
+    referral_count integer not null default 0,
+    notes text,
+    office_visited_date date,
+    gift_freebie_left text,
+    preferred_contact_method text,
+    brokerage_office_address text,
+    created_at timestamp with time zone not null default now(),
+    updated_at timestamp with time zone not null default now()
 );
 
 create table public.contact_notes (

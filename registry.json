@@ -618,6 +618,10 @@
           "type": "registry:component"
         },
         {
+          "path": "src/components/atomic-crm/dashboard/InspectorDashboard.tsx",
+          "type": "registry:component"
+        },
+        {
           "path": "src/components/atomic-crm/dashboard/HotContacts.tsx",
           "type": "registry:component"
         },

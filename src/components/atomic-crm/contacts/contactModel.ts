@@ -5,15 +5,26 @@ import type { Company, Contact, ContactGender } from "../types";
 export const defaultEmailJsonb = [{ email: null, type: null }];
 export const defaultPhoneJsonb = [{ number: null, type: null }];
 
-const cleanContactArrayFields = (data: Contact) => {
+const cleanContactArrayFields = (
+  data: Contact & { email?: string; phone?: string },
+) => {
   const cleanedEmailJsonb =
     data.email_jsonb?.filter((e) => e.email != null) || [];
   const cleanedPhoneJsonb =
     data.phone_jsonb?.filter((p) => p.number != null) || [];
+  const email_jsonb = data.email
+    ? [{ email: data.email, type: "Work" as const }]
+    : cleanedEmailJsonb;
+  const phone_jsonb = data.phone
+    ? [{ number: data.phone, type: "Work" as const }]
+    : cleanedPhoneJsonb;
   return {
     ...data,
-    phone_jsonb: cleanedPhoneJsonb.length > 0 ? cleanedPhoneJsonb : null,
-    email_jsonb: cleanedEmailJsonb.length > 0 ? cleanedEmailJsonb : null,
+    last_name: data.last_name ?? "",
+    background: data.notes ?? data.background ?? "",
+    updatedAt: new Date().toISOString(),
+    phone_jsonb: phone_jsonb.length > 0 ? phone_jsonb : null,
+    email_jsonb: email_jsonb.length > 0 ? email_jsonb : null,
   };
 };
 
@@ -22,6 +33,8 @@ export const cleanupContactForCreate = (data: Contact) => {
     ...data,
     first_seen: new Date().toISOString(),
     last_seen: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
     tags: [],
   });
 };

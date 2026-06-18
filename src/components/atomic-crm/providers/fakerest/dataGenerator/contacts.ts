@@ -57,7 +57,8 @@ export const generateContacts = (db: Db, size = 500): Required<Contact>[] => {
           ".jpeg"
         : undefined,
     };
-    const title = fakerCompany.bsAdjective();
+    const title = "Realtor";
+    const brokerage = `${fakerCompany.companyName()} Realty`;
 
     if (has_avatar) {
       numberOfContacts++;
@@ -72,6 +73,7 @@ export const generateContacts = (db: Db, size = 500): Required<Contact>[] => {
 
     const first_seen = randomDate(new Date(company.created_at)).toISOString();
     const last_seen = first_seen;
+    const createdAt = first_seen;
 
     return {
       id,
@@ -80,10 +82,41 @@ export const generateContacts = (db: Db, size = 500): Required<Contact>[] => {
       gender,
       title: title.charAt(0).toUpperCase() + title.substr(1),
       company_id: company.id,
-      company_name: company.name,
+      company_name: brokerage,
+      brokerage,
       email_jsonb,
       phone_jsonb,
       background: lorem.sentence(),
+      notes: lorem.sentence(),
+      phone: phone_jsonb[0].number,
+      email: email_jsonb[0].email,
+      website: internet.url(),
+      facebookUrl: `https://facebook.com/${first_name}.${last_name}`,
+      instagramUrl: `https://instagram.com/${first_name.toLowerCase()}${last_name.toLowerCase()}`,
+      googleBusinessUrl: internet.url(),
+      followUpDate: randomDate(new Date()).toISOString().slice(0, 10),
+      freebieDelivered: weightedBoolean(35),
+      referralCount: random.number({ min: 0, max: 12 }),
+      officeVisitedDate: randomDate(new Date(company.created_at))
+        .toISOString()
+        .slice(0, 10),
+      giftFreebieLeft: random.arrayElement([
+        "Coffee cards",
+        "Donuts",
+        "Inspection checklist",
+        "Branded pens",
+        "None yet",
+      ]),
+      preferredContactMethod: random.arrayElement([
+        "Phone",
+        "Email",
+        "Text",
+        "Office visit",
+        "Instagram",
+      ]),
+      brokerageOfficeAddress: `${random.number({ min: 100, max: 9999 })} Main St`,
+      createdAt,
+      updatedAt: last_seen,
       acquisition: random.arrayElement(["inbound", "outbound"]),
       avatar,
       first_seen: first_seen,

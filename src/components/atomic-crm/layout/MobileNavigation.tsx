@@ -63,16 +63,14 @@ export const MobileNavigation = () => {
           <NavigationButton
             href="/contacts"
             Icon={Users}
-            label={translate("resources.contacts.name", {
-              smart_count: 2,
-            })}
+            label="Realtors"
             isActive={currentPath === "/contacts"}
           />
           <CreateButton />
           <NavigationButton
             href="/tasks"
             Icon={ListTodo}
-            label={translate("resources.tasks.name", { smart_count: 2 })}
+            label="Follow-Ups"
             isActive={currentPath === "/tasks"}
           />
           <SettingsButton />
@@ -149,7 +147,7 @@ const CreateButton = () => {
               setContactCreateOpen(true);
             }}
           >
-            {translate("resources.contacts.forcedCaseName")}
+            Add Realtor
           </DropdownMenuItem>
           <DropdownMenuItem
             className="h-12 px-4 text-base"
