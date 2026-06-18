@@ -10,7 +10,7 @@ import { MobileNavigation } from "./MobileNavigation";
 export const MobileLayout = ({ children }: { children: ReactNode }) => {
   useConfigurationLoader();
   return (
-    <>
+    <div className="premium-shell min-h-dvh pb-20">
       <ErrorBoundary FallbackComponent={Error}>
         <Suspense fallback={<Skeleton className="h-12 w-12 rounded-full" />}>
           {children}
@@ -18,6 +18,6 @@ export const MobileLayout = ({ children }: { children: ReactNode }) => {
       </ErrorBoundary>
       <MobileNavigation />
       <Notification mobileOffset={{ bottom: "72px" }} />
-    </>
+    </div>
   );
 };

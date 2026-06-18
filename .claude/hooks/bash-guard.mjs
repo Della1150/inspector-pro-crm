@@ -63,7 +63,8 @@ const runsUnitTests = (c) =>
   );
 const runsE2eTests = (c) => /(npx\s+playwright\s+test|make\s+test-e2e)/.test(c);
 const runsLint = (c) => /(make\s+lint\b|npm\s+run\s+lint\b)/.test(c);
-const runsBuild = (c) => /(npx\s+vite\s+build|npm\s+run\s+build\b|make\s+build\b)/.test(c);
+const runsBuild = (c) =>
+  /(npx\s+vite\s+build|npm\s+run\s+build\b|make\s+build\b)/.test(c);
 
 const VALIDATION_RULES = [
   [

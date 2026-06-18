@@ -40,12 +40,18 @@ describe("bash-guard hook", () => {
     });
 
     test("headed playwright screenshot from merger → blocked", () => {
-      const r = runHook("merger", "npx playwright screenshot http://localhost:5173 out.png");
+      const r = runHook(
+        "merger",
+        "npx playwright screenshot http://localhost:5173 out.png",
+      );
       expect(isBlocked(r)).toBe(true);
     });
 
     test("playwright with --headless from main session → allowed", () => {
-      const r = runHook("", "npx playwright screenshot --headless http://localhost:5173 out.png");
+      const r = runHook(
+        "",
+        "npx playwright screenshot --headless http://localhost:5173 out.png",
+      );
       expect(r.status).toBe(0);
       expect(isBlocked(r)).toBe(false);
     });
