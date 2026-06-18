@@ -30,7 +30,7 @@ export const ContactInputs = () => {
         </p>
       </div>
       <div className="flex flex-col gap-8 md:flex-row">
-        <section className="flex flex-1 flex-col gap-4">
+        <section className="premium-form-section flex flex-1 flex-col gap-4">
           <h3 className="text-lg font-black text-slate-950">
             Realtor & brokerage
           </h3>
@@ -56,7 +56,7 @@ export const ContactInputs = () => {
           />
         </section>
         {!isMobile && <Separator orientation="vertical" />}
-        <section className="flex flex-1 flex-col gap-4">
+        <section className="premium-form-section flex flex-1 flex-col gap-4">
           <h3 className="text-lg font-black text-slate-950">
             Quick contact links
           </h3>
@@ -98,7 +98,7 @@ export const ContactInputs = () => {
           />
         </section>
         {!isMobile && <Separator orientation="vertical" />}
-        <section className="flex flex-1 flex-col gap-4">
+        <section className="premium-form-section flex flex-1 flex-col gap-4">
           <h3 className="text-lg font-black text-slate-950">
             Referral follow-up
           </h3>
