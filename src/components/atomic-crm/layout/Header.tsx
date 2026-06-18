@@ -1,4 +1,12 @@
-import { FileText, Import, Settings, User, Users } from "lucide-react";
+import {
+  BarChart3,
+  FileText,
+  Import,
+  ListTodo,
+  Settings,
+  User,
+  Users,
+} from "lucide-react";
 import { CanAccess, useTranslate, useUserMenu } from "ra-core";
 import { Link, matchPath, useLocation } from "react-router";
 import { RefreshButton } from "@/components/admin/refresh-button";
@@ -36,56 +44,68 @@ const Header = () => {
 
   return (
     <>
-      <nav className="grow">
-        <header className="bg-secondary">
-          <div className="px-4">
-            <div className="flex justify-between items-center flex-1">
+      <nav className="sticky top-0 z-40 border-b border-white/60 bg-white/85 backdrop-blur-xl supports-[backdrop-filter]:bg-white/75">
+        <header>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="flex h-18 flex-1 items-center justify-between gap-4">
               <Link
                 to="/"
-                className="flex items-center gap-2 text-secondary-foreground no-underline"
+                className="group flex items-center gap-3 text-slate-950 no-underline"
               >
                 <img
-                  className="[.light_&]:hidden h-6"
+                  className="[.light_&]:hidden h-8 rounded-xl shadow-sm"
                   src={darkModeLogo}
                   alt={title}
                 />
                 <img
-                  className="[.dark_&]:hidden h-6"
+                  className="[.dark_&]:hidden h-8 rounded-xl shadow-sm"
                   src={lightModeLogo}
                   alt={title}
                 />
-                <h1 className="text-xl font-semibold">{title}</h1>
+                <div>
+                  <h1 className="text-lg font-black tracking-tight sm:text-xl">
+                    {title}
+                  </h1>
+                  <p className="hidden text-xs font-semibold uppercase tracking-[0.2em] text-blue-700 sm:block">
+                    Referral OS
+                  </p>
+                </div>
               </Link>
               <div>
-                <nav className="flex">
+                <nav className="hidden items-center rounded-full border border-slate-200 bg-slate-100/80 p-1 shadow-inner lg:flex">
                   <NavigationTab
                     label={translate("ra.page.dashboard")}
+                    icon={<BarChart3 className="size-4" />}
                     to="/"
                     isActive={currentPath === "/"}
                   />
                   <NavigationTab
                     label="Realtors"
+                    icon={<Users className="size-4" />}
                     to="/contacts"
                     isActive={currentPath === "/contacts"}
                   />
                   <NavigationTab
                     label="Follow-Ups"
+                    icon={<ListTodo className="size-4" />}
                     to="/tasks"
                     isActive={currentPath === "/tasks"}
                   />
                   <NavigationTab
                     label="Import/Export"
+                    icon={<Import className="size-4" />}
                     to="/import"
                     isActive={currentPath === "/import"}
                   />
                   <NavigationTab
                     label="Settings"
+                    icon={<Settings className="size-4" />}
                     to="/settings"
                     isActive={currentPath === "/settings"}
                   />
                 </nav>
               </div>
-              <div className="flex items-center">
+              <div className="flex items-center gap-1 rounded-full border border-slate-200 bg-white/80 px-2 py-1 shadow-sm">
                 <ThemeModeToggle />
                 <RefreshButton />
                 <UserMenu>
@@ -110,21 +130,24 @@ const Header = () => {
 
 const NavigationTab = ({
   label,
+  icon,
   to,
   isActive,
 }: {
   label: string;
+  icon?: React.ReactNode;
   to: string;
   isActive: boolean;
 }) => (
   <Link
     to={to}
-    className={`px-6 py-3 text-sm font-medium transition-colors border-b-2 ${
+    className={`inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-bold transition-all ${
       isActive
-        ? "text-secondary-foreground border-secondary-foreground"
-        : "text-secondary-foreground/70 border-transparent hover:text-secondary-foreground/80"
+        ? "bg-slate-950 text-white shadow-sm"
+        : "text-slate-600 hover:bg-white hover:text-slate-950"
     }`}
   >
+    {icon}
     {label}
   </Link>
 );

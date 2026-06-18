@@ -19,8 +19,8 @@ const preferredContactChoices = [
 export const ContactInputs = () => {
   const isMobile = useIsMobile();
   return (
-    <div className="rounded-3xl bg-white p-1 md:p-2">
-      <div className="mb-6 rounded-3xl bg-slate-950 p-5 text-white">
+    <div className="premium-panel p-4 md:p-6">
+      <div className="mb-6 rounded-[1.75rem] bg-gradient-to-br from-slate-950 to-blue-950 p-6 text-white shadow-xl">
         <p className="text-sm uppercase tracking-[0.2em] text-blue-200">
           Inspector Pro CRM
         </p>
@@ -31,7 +31,7 @@ export const ContactInputs = () => {
       </div>
       <div className="flex flex-col gap-8 md:flex-row">
         <section className="flex flex-1 flex-col gap-4">
-          <h3 className="text-lg font-semibold text-slate-950">
+          <h3 className="text-lg font-black text-slate-950">
             Realtor & brokerage
           </h3>
           <TextInput
@@ -57,7 +57,7 @@ export const ContactInputs = () => {
         </section>
         {!isMobile && <Separator orientation="vertical" />}
         <section className="flex flex-1 flex-col gap-4">
-          <h3 className="text-lg font-semibold text-slate-950">
+          <h3 className="text-lg font-black text-slate-950">
             Quick contact links
           </h3>
           <TextInput
@@ -99,7 +99,7 @@ export const ContactInputs = () => {
         </section>
         {!isMobile && <Separator orientation="vertical" />}
         <section className="flex flex-1 flex-col gap-4">
-          <h3 className="text-lg font-semibold text-slate-950">
+          <h3 className="text-lg font-black text-slate-950">
             Referral follow-up
           </h3>
           <DateInput

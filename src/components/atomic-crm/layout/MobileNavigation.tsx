@@ -41,7 +41,7 @@ export const MobileNavigation = () => {
   return (
     <nav
       aria-label={translate("crm.navigation.label")}
-      className="fixed bottom-0 left-0 right-0 z-50 bg-secondary h-14"
+      className="fixed inset-x-3 bottom-3 z-50 rounded-[1.75rem] border border-white/70 bg-slate-950/95 shadow-[0_22px_60px_-30px_rgba(15,23,42,0.9)] backdrop-blur-xl"
       style={{
         // iOS bug: even though viewport is set correctly, the bottom safe area inset is not accounted for
         // So we manually add some padding to avoid the navigation being too close to the home bar
@@ -49,7 +49,7 @@ export const MobileNavigation = () => {
         // We use box-sizing: border-box, so the height contains the padding.
         // To actually increase the padding, we need to increase the height as well
         height:
-          "calc(var(--spacing)) * 6" + (isPwa && isWebiOS ? " + 15px" : ""),
+          "calc(var(--spacing) * 16)" + (isPwa && isWebiOS ? " + 15px" : ""),
       }}
     >
       <div className="flex justify-center">
@@ -95,8 +95,8 @@ const NavigationButton = ({
     asChild
     variant="ghost"
     className={cn(
-      "flex-col gap-1 h-auto py-2 px-1 rounded-md w-16",
-      isActive ? null : "text-muted-foreground",
+      "flex-col gap-1 h-auto py-2 px-1 rounded-2xl w-16 text-white/70 hover:bg-white/10 hover:text-white",
+      isActive ? "bg-white/15 text-white" : null,
     )}
   >
     <Link to={href}>
@@ -134,7 +134,7 @@ const CreateButton = () => {
           <Button
             variant="default"
             size="icon"
-            className="h-16 w-16 rounded-full -mt-3"
+            className="h-16 w-16 rounded-full -mt-5 bg-blue-600 shadow-lg shadow-blue-950/40 hover:bg-blue-500"
             aria-label={translate("ra.action.create")}
           >
             <Plus className="size-10" />
