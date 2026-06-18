@@ -205,4 +205,13 @@ input[type="time"] {
   .premium-kicker {
     @apply text-xs font-bold uppercase tracking-[0.28em] text-blue-700;
   }
+  .premium-icon-tile {
+    @apply flex size-11 items-center justify-center rounded-2xl bg-gradient-to-br from-slate-950 to-blue-800 text-white shadow-lg shadow-blue-950/15;
+  }
+  .premium-empty-state {
+    @apply rounded-[2rem] border border-dashed border-slate-300/80 bg-white/70 p-8 text-center shadow-inner;
+  }
+  .premium-form-section {
+    @apply rounded-3xl border border-slate-200/80 bg-white/75 p-4 shadow-sm sm:p-5;
+  }
 }
