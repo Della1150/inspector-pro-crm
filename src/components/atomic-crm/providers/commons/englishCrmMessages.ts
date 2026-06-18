@@ -9,7 +9,7 @@ export const englishCrmMessages = {
         linkedin_url: "LinkedIn URL",
         phone_number: "Phone number",
         created_at: "Created at",
-        nb_contacts: "Number of contacts",
+        nb_contacts: "Number of realtors",
         revenue: "Revenue",
         sector: "Sector",
         size: "Size",
@@ -28,7 +28,7 @@ export const englishCrmMessages = {
         title: "No companies found",
       },
       field_categories: {
-        contact: "Contact",
+        contact: "Realtor",
         additional_info: "Additional information",
         address: "Address",
         context: "Context",
@@ -43,7 +43,7 @@ export const englishCrmMessages = {
       followed_by: "Followed by %{name}",
       followed_by_you: "Followed by you",
       no_contacts: "No contact",
-      nb_contacts: "%{smart_count} contact |||| %{smart_count} contacts",
+      nb_contacts: "%{smart_count} contact |||| %{smart_count} realtors",
       nb_deals: "%{smart_count} deal |||| %{smart_count} deals",
       sizes: {
         one_employee: "1 employee",
@@ -62,8 +62,8 @@ export const englishCrmMessages = {
       },
     },
     contacts: {
-      name: "Contact |||| Contacts",
-      forcedCaseName: "Contact",
+      name: "Realtor |||| Realtors",
+      forcedCaseName: "Realtor",
       field_categories: {
         background_info: "Background info",
         identity: "Identity",
@@ -92,7 +92,7 @@ export const englishCrmMessages = {
         create: "Create contact",
         edit: "Edit contact",
         export_vcard: "Export to vCard",
-        new: "New Contact",
+        new: "New Realtor",
         show: "Show contact",
       },
       background: {
@@ -106,15 +106,15 @@ export const englishCrmMessages = {
       position_at_company: "%{title} at %{company}",
       empty: {
         description: "It seems your contact list is empty.",
-        title: "No contacts found",
+        title: "No realtors found",
       },
       import: {
-        title: "Import contacts",
+        title: "Import realtors",
         button: "Import CSV",
         complete:
-          "Contacts import complete. Imported %{importCount} contacts, with %{errorCount} errors",
+          "Realtors import complete. Imported %{importCount} realtors, with %{errorCount} errors",
         progress:
-          "Imported %{importCount} / %{rowCount} contacts, with %{errorCount} errors.",
+          "Imported %{importCount} / %{rowCount} realtors, with %{errorCount} errors.",
         error:
           "Failed to import this file, please make sure your provided a valid CSV file.",
         imported: "Imported",
@@ -124,7 +124,7 @@ export const englishCrmMessages = {
         sample_hint: "Here is a sample CSV file you can use as a template",
         stop: "Stop import",
         csv_file: "CSV File",
-        contacts_label: "contact |||| contacts",
+        contacts_label: "contact |||| realtors",
       },
       inputs: {
         genders: {
@@ -139,32 +139,32 @@ export const englishCrmMessages = {
         },
       },
       list: {
-        error_loading: "Error loading contacts",
+        error_loading: "Error loading realtors",
       },
       bulk_tag: {
         action: "Tag",
         back: "Back to tags",
         create_description:
-          "Create a new tag and apply it to the selected contacts.",
+          "Create a new tag and apply it to the selected realtors.",
         description:
-          "Choose an existing tag or create a new one for the selected contacts.",
-        empty: "No tags yet. Create one to tag the selected contacts.",
-        error: "Failed to add tag to contacts",
-        noop: "Selected contacts already have this tag",
+          "Choose an existing tag or create a new one for the selected realtors.",
+        empty: "No tags yet. Create one to tag the selected realtors.",
+        error: "Failed to add tag to realtors",
+        noop: "Selected realtors already have this tag",
         success:
-          "Tag added to %{smart_count} contact |||| Tag added to %{smart_count} contacts",
-        title: "Add tag to contacts",
+          "Tag added to %{smart_count} contact |||| Tag added to %{smart_count} realtors",
+        title: "Add tag to realtors",
       },
       merge: {
         action: "Merge with another contact",
-        confirm: "Merge Contacts",
+        confirm: "Merge Realtors",
         current_contact: "Current Contact (will be deleted)",
         description: "Merge this contact with another one.",
-        error: "Failed to merge contacts",
+        error: "Failed to merge realtors",
         merging: "Merging...",
         no_additional_data: "No additional data to merge",
         select_target: "Please select a contact to merge with",
-        success: "Contacts merged successfully",
+        success: "Realtors merged successfully",
         target_contact: "Target Contact (will be kept)",
         title: "Merge Contact",
         warning_description:
@@ -186,8 +186,8 @@ export const englishCrmMessages = {
       hot: {
         empty_change_status:
           'Change the status of a contact by adding a note to that contact and clicking on "show options".',
-        empty_hint: 'Contacts with a "hot" status will appear here.',
-        title: "Hot Contacts",
+        empty_hint: 'Realtors with a "hot" status will appear here.',
+        title: "Top Realtor Partners",
       },
     },
     deals: {
@@ -196,7 +196,7 @@ export const englishCrmMessages = {
         name: "Name",
         description: "Description",
         company_id: "Company",
-        contact_ids: "Contacts",
+        contact_ids: "Realtors",
         category: "Category",
         amount: "Budget",
         expected_closing_date: "Expected closing date",
@@ -339,7 +339,7 @@ export const englishCrmMessages = {
         edit_for: "Edit task for %{name}",
       },
       empty: "No tasks yet",
-      empty_list_hint: "Tasks added to your contacts will appear here.",
+      empty_list_hint: "Tasks added to your realtors will appear here.",
       filters: {
         later: "Later",
         overdue: "Overdue",
@@ -387,7 +387,7 @@ export const englishCrmMessages = {
         creating: "Creating...",
         initial_user_created: "Initial user successfully created",
       },
-      welcome_title: "Welcome to Atomic CRM",
+      welcome_title: "Welcome to Inspector Pro CRM",
     },
     common: {
       activity: "Activity",
@@ -432,7 +432,7 @@ export const englishCrmMessages = {
       latest_notes: "My Latest Notes",
       latest_notes_added_ago: "added %{timeAgo}",
       stepper: {
-        install: "Install Atomic CRM",
+        install: "Install Inspector Pro CRM",
         progress: "%{step}/3 done",
         whats_next: "What's next?",
       },
@@ -459,7 +459,7 @@ export const englishCrmMessages = {
       },
       idle: {
         description_1:
-          "You can import sales, companies, contacts, companies, notes, and tasks.",
+          "You can import sales, companies, realtors, companies, notes, and tasks.",
         description_2:
           "Data must be in a JSON file matching the following sample:",
       },
@@ -530,7 +530,7 @@ export const englishCrmMessages = {
     profile: {
       inbound: {
         description:
-          "You can start sending emails to your server's inbound email address, e.g. by adding it to the %{field} field. Atomic CRM will process the emails and add notes to the corresponding contacts.",
+          "You can start sending emails to your server's inbound email address, e.g. by adding it to the %{field} field. Inspector Pro CRM will process the emails and add notes to the corresponding realtors.",
         title: "Inbound email",
       },
       mcp: {

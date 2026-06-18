@@ -1,297 +1,117 @@
-import { difference, union } from "lodash";
-import {
-  type Identifier,
-  RecordContextProvider,
-  RecordRepresentation,
-  useListContext,
-  useLocaleState,
-  useTimeout,
-  useTranslate,
-} from "ra-core";
-import { type MouseEvent, useCallback, useRef } from "react";
+import { format, parseISO } from "date-fns";
+import { Mail, Phone, Globe, Gift, CalendarClock } from "lucide-react";
+import { RecordContextProvider, useListContext } from "ra-core";
 import { Link } from "react-router";
-import { ReferenceField } from "@/components/admin/reference-field";
-import { TextField } from "@/components/admin/text-field";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
-
-import { Status } from "../misc/Status";
-import { formatRelativeDate } from "../misc/RelativeDate";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Contact } from "../types";
-import { Avatar } from "./Avatar";
-import { TagsList } from "./TagsList";
+
+type Realtor = Contact & {
+  brokerage?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  followUpDate?: string;
+  freebieDelivered?: boolean;
+  referralCount?: number;
+  preferredContactMethod?: string;
+};
+const name = (r: Realtor) =>
+  [r.first_name, r.last_name].filter(Boolean).join(" ");
+const email = (r: Realtor) => r.email ?? r.email_jsonb?.[0]?.email;
+const phone = (r: Realtor) => r.phone ?? r.phone_jsonb?.[0]?.number;
 
 export const ContactListContent = () => {
-  const translate = useTranslate();
-  const {
-    data: contacts,
-    error,
-    isPending,
-    onToggleItem,
-    onSelect,
-    selectedIds,
-  } = useListContext<Contact>();
-  const lastSelected = useRef<Identifier | null>(null);
-
-  // Handle shift+click to select a range of rows
-  const handleToggleItem = useCallback(
-    (id: Identifier, event: MouseEvent) => {
-      if (!contacts) return;
-
-      const ids = contacts.map((contact) => contact.id);
-      const lastSelectedIndex = lastSelected.current
-        ? ids.indexOf(lastSelected.current)
-        : -1;
-
-      if (event.shiftKey && lastSelectedIndex !== -1) {
-        const index = ids.indexOf(id);
-        const idsBetweenSelections = ids.slice(
-          Math.min(lastSelectedIndex, index),
-          Math.max(lastSelectedIndex, index) + 1,
-        );
-
-        const isClickedItemSelected = selectedIds?.includes(id);
-        const newSelectedIds = isClickedItemSelected
-          ? difference(selectedIds, idsBetweenSelections)
-          : union(selectedIds, idsBetweenSelections);
-
-        onSelect?.(newSelectedIds);
-      } else {
-        onToggleItem(id);
-      }
-
-      lastSelected.current = id;
-    },
-    [contacts, selectedIds, onSelect, onToggleItem],
-  );
-
-  if (isPending) {
-    return <Skeleton className="w-full h-9" />;
-  }
-
-  if (error) {
-    return null;
-  }
-
+  const { data = [], isPending, error } = useListContext<Realtor>();
+  if (isPending) return <Skeleton className="h-20 w-full rounded-3xl" />;
+  if (error) return null;
   return (
-    <div className="md:divide-y">
-      {contacts.map((contact) => (
-        <RecordContextProvider key={contact.id} value={contact}>
-          <ContactItemContent
-            contact={contact}
-            handleToggleItem={handleToggleItem}
-          />
-        </RecordContextProvider>
-      ))}
-
-      {contacts.length === 0 && (
-        <div className="p-4">
-          <div className="text-muted-foreground">
-            {translate("resources.contacts.empty.title", {})}
-          </div>
-        </div>
+    <div className="grid gap-4 p-2">
+      {data.length === 0 ? (
+        <Empty />
+      ) : (
+        data.map((r) => (
+          <RecordContextProvider key={r.id} value={r}>
+            <RealtorCard realtor={r} />
+          </RecordContextProvider>
+        ))
       )}
     </div>
   );
 };
 
-const ContactItemContent = ({
-  contact,
-  handleToggleItem,
-}: {
-  contact: Contact;
-  handleToggleItem: (id: Identifier, event: MouseEvent) => void;
-}) => {
-  const translate = useTranslate();
-  const [locale = "en"] = useLocaleState();
-  const { selectedIds } = useListContext<Contact>();
-  const lastActivity = contact.last_seen
-    ? formatRelativeDate(contact.last_seen, locale)
-    : null;
+export const ContactListContentMobile = ContactListContent;
 
-  return (
-    <div className="flex flex-row items-center pl-2 pr-4 py-2 hover:bg-muted transition-colors first:rounded-t-xl last:rounded-b-xl">
+const Empty = () => (
+  <div className="rounded-3xl bg-white p-8 text-center text-slate-500">
+    No realtors found. Add a realtor or adjust your filters.
+  </div>
+);
+
+const RealtorCard = ({ realtor }: { realtor: Realtor }) => (
+  <Link
+    to={`/contacts/${realtor.id}/show`}
+    className="block rounded-3xl border border-slate-100 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md md:p-5"
+  >
+    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+      <div className="min-w-0">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="truncate text-xl font-bold text-slate-950">
+            {name(realtor)}
+          </h3>
+          {realtor.freebieDelivered && (
+            <Badge className="rounded-full bg-blue-50 text-blue-900 hover:bg-blue-50">
+              <Gift className="mr-1 size-3" /> Freebie delivered
+            </Badge>
+          )}
+        </div>
+        <p className="mt-1 text-sm font-medium text-slate-600">
+          {realtor.brokerage ?? realtor.company_name ?? "No brokerage added"}
+        </p>
+        <div className="mt-3 flex flex-wrap gap-2 text-sm text-slate-500">
+          {realtor.followUpDate && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1">
+              <CalendarClock className="size-4" /> Follow up{" "}
+              {format(parseISO(realtor.followUpDate), "MMM d")}
+            </span>
+          )}
+          <span className="rounded-full bg-slate-100 px-3 py-1">
+            {realtor.referralCount ?? 0} referrals
+          </span>
+          {realtor.preferredContactMethod && (
+            <span className="rounded-full bg-slate-100 px-3 py-1">
+              Prefers {realtor.preferredContactMethod}
+            </span>
+          )}
+        </div>
+      </div>
       <div
-        className="px-4 py-3 flex items-center cursor-pointer"
-        onClick={(e) => handleToggleItem(contact.id, e)}
+        className="grid grid-cols-3 gap-2 md:w-auto"
+        onClick={(e) => e.preventDefault()}
       >
-        <Checkbox
-          className="cursor-pointer"
-          checked={selectedIds.includes(contact.id)}
-        />
-      </div>
-      <Link
-        to={`/contacts/${contact.id}/show`}
-        className="flex-1 flex flex-row gap-4 items-center"
-      >
-        <Avatar />
-        <div className="flex-1 min-w-0">
-          <div className="font-medium">
-            {`${contact.first_name} ${contact.last_name ?? ""}`}
-          </div>
-          {contact.title || contact.company_id != null || contact.nb_tasks ? (
-            <div className="text-sm text-muted-foreground">
-              {contact.title && contact.company_id != null
-                ? `${translate("resources.contacts.position_at", {
-                    title: contact.title,
-                  })} `
-                : contact.title}
-              {contact.company_id != null && (
-                <ReferenceField
-                  source="company_id"
-                  reference="companies"
-                  link={false}
-                >
-                  <TextField source="name" />
-                </ReferenceField>
-              )}
-              {contact.nb_tasks
-                ? ` - ${translate("crm.common.task_count", {
-                    smart_count: contact.nb_tasks,
-                  })}`
-                : ""}
-              &nbsp;&nbsp;
-              <TagsList />
-            </div>
-          ) : null}
-        </div>
-        {contact.last_seen && (
-          <div className="text-right ml-4">
-            <div
-              className="text-sm text-muted-foreground"
-              title={contact.last_seen}
-            >
-              {translate("crm.common.last_activity_with_date", {
-                date: lastActivity,
-              })}{" "}
-              <Status status={contact.status} />
-            </div>
-          </div>
-        )}
-      </Link>
-    </div>
-  );
-};
-
-export const ContactListContentMobile = () => {
-  const translate = useTranslate();
-  const {
-    data: contacts,
-    error,
-    isPending,
-    refetch,
-  } = useListContext<Contact>();
-  const oneSecondHasPassed = useTimeout(1000);
-
-  if (isPending) {
-    if (!oneSecondHasPassed) {
-      return null;
-    }
-    return (
-      <>
-        {[...Array(5)].map((_, index) => (
-          <div
-            key={index}
-            className="flex flex-row items-center py-2 hover:bg-muted transition-colors first:rounded-t-xl last:rounded-b-xl"
-          >
-            <div className="flex flex-row gap-4 items-center mr-4">
-              <Skeleton className="w-10 h-10 rounded-full" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <Skeleton className="w-32 h-5 mb-2" />
-              <Skeleton className="w-48 h-4" />
-            </div>
-          </div>
-        ))}
-      </>
-    );
-  }
-
-  if (error && !contacts) {
-    return (
-      <div className="p-4">
-        <div className="text-center text-muted-foreground mb-4">
-          {translate("resources.contacts.list.error_loading")}
-        </div>
-        <div className="text-center mt-2">
-          <Button
-            onClick={() => {
-              refetch();
-            }}
-          >
-            <RotateCcw />
-            {translate("crm.common.retry")}
+        {phone(realtor) && (
+          <Button asChild size="lg" className="rounded-2xl">
+            <a href={`tel:${phone(realtor)}`}>
+              <Phone />
+            </a>
           </Button>
-        </div>
+        )}
+        {email(realtor) && (
+          <Button asChild size="lg" variant="secondary" className="rounded-2xl">
+            <a href={`mailto:${email(realtor)}`}>
+              <Mail />
+            </a>
+          </Button>
+        )}
+        {realtor.website && (
+          <Button asChild size="lg" variant="outline" className="rounded-2xl">
+            <a href={realtor.website} target="_blank" rel="noreferrer">
+              <Globe />
+            </a>
+          </Button>
+        )}
       </div>
-    );
-  }
-
-  return (
-    <div className="md:divide-y">
-      {contacts.map((contact) => (
-        <RecordContextProvider key={contact.id} value={contact}>
-          <ContactItemContentMobile contact={contact} />
-        </RecordContextProvider>
-      ))}
-      {contacts.length === 0 && (
-        <div className="p-4">
-          <div className="text-muted-foreground">
-            {translate("resources.contacts.empty.title")}
-          </div>
-        </div>
-      )}
     </div>
-  );
-};
-
-const ContactItemContentMobile = ({ contact }: { contact: Contact }) => {
-  const translate = useTranslate();
-  return (
-    <Link
-      to={`/contacts/${contact.id}/show`}
-      className="flex flex-row gap-4 items-center py-2 hover:bg-muted transition-colors"
-    >
-      <Avatar />
-      <div className="flex flex-col grow justify-between">
-        <div className="flex-1 min-w-0">
-          <div className="flex justify-between">
-            <div className="font-medium">
-              <RecordRepresentation />
-            </div>
-            <Status status={contact.status} />
-          </div>
-          <div className="text-sm text-muted-foreground">
-            <div className="flex flex-col gap-1">
-              <span>
-                {contact.title && contact.company_id != null
-                  ? `${translate("resources.contacts.position_at", {
-                      title: contact.title,
-                    })} `
-                  : contact.title}
-                {contact.company_id != null && (
-                  <ReferenceField
-                    source="company_id"
-                    reference="companies"
-                    link={false}
-                  >
-                    <TextField source="name" />
-                  </ReferenceField>
-                )}
-              </span>
-              {contact.nb_tasks ? (
-                <span>
-                  {translate("crm.common.task_count", {
-                    smart_count: contact.nb_tasks,
-                  })}
-                </span>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-};
+  </Link>
+);

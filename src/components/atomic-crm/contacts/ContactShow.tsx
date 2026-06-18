@@ -1,302 +1,268 @@
-import { useState } from "react";
+import { format, parseISO } from "date-fns";
 import {
-  InfiniteListBase,
-  RecordRepresentation,
+  CalendarPlus,
+  Edit,
+  Facebook,
+  Gift,
+  Globe,
+  Instagram,
+  Mail,
+  MapPin,
+  Phone,
+  Star,
+} from "lucide-react";
+import {
   ShowBase,
+  useNotify,
   useShowContext,
-  useTranslate,
+  useUpdate,
+  type ShowBaseProps,
 } from "ra-core";
-import type { ShowBaseProps } from "ra-core";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { ReferenceField } from "@/components/admin/reference-field";
-import { TextField } from "@/components/admin/text-field";
-import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Pencil } from "lucide-react";
 import { Link } from "react-router";
-
-import MobileHeader from "../layout/MobileHeader";
-import { MobileContent } from "../layout/MobileContent";
-import { CompanyAvatar } from "../companies/CompanyAvatar";
-import { NoteCreate, NotesIterator, NotesIteratorMobile } from "../notes";
-import { NoteCreateSheet } from "../notes/NoteCreateSheet";
-import { TagsListEdit } from "./TagsListEdit";
-import { ContactEditSheet } from "./ContactEditSheet";
-import { ContactStatusSelector } from "./ContactInputs";
-import { ContactPersonalInfo } from "./ContactPersonalInfo";
-import { ContactBackgroundInfo } from "./ContactBackgroundInfo";
-import { ContactTasksList } from "./ContactTasksList";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Contact } from "../types";
-import { Avatar } from "./Avatar";
-import { ContactAside } from "./ContactAside";
-import { MobileBackButton } from "../misc/MobileBackButton";
 
-export const ContactShow = (props: ShowBaseProps = {}) => {
-  const isMobile = useIsMobile();
-
-  return (
-    <ShowBase
-      queryOptions={{
-        onError: isMobile
-          ? () => {
-              {
-                /** Disable error notification as the content handles offline */
-              }
-            }
-          : undefined,
-      }}
-      {...props}
-    >
-      {isMobile ? <ContactShowContentMobile /> : <ContactShowContent />}
-    </ShowBase>
-  );
+type Realtor = Contact & {
+  brokerage?: string;
+  phone?: string;
+  email?: string;
+  website?: string;
+  facebookUrl?: string;
+  instagramUrl?: string;
+  googleBusinessUrl?: string;
+  followUpDate?: string;
+  freebieDelivered?: boolean;
+  referralCount?: number;
+  notes?: string;
+  officeVisitedDate?: string;
+  giftFreebieLeft?: string;
+  preferredContactMethod?: string;
+  brokerageOfficeAddress?: string;
 };
+const fullName = (r: Realtor) =>
+  [r.first_name, r.last_name].filter(Boolean).join(" ");
+const email = (r: Realtor) => r.email ?? r.email_jsonb?.[0]?.email;
+const phone = (r: Realtor) => r.phone ?? r.phone_jsonb?.[0]?.number;
 
-const ContactShowContentMobile = () => {
-  const translate = useTranslate();
-  const { defaultTitle, record, isPending } = useShowContext<Contact>();
-  const [noteCreateOpen, setNoteCreateOpen] = useState(false);
-  const [editOpen, setEditOpen] = useState(false);
+export const ContactShow = (props: ShowBaseProps = {}) => (
+  <ShowBase {...props}>
+    <RealtorShow />
+  </ShowBase>
+);
+
+const RealtorShow = () => {
+  const { record, isPending } = useShowContext<Realtor>();
+  const [update] = useUpdate<Realtor>();
+  const notify = useNotify();
   if (isPending || !record) return null;
-
-  const taskCount = record.nb_tasks ?? 0;
-
+  const markFreebie = () =>
+    update(
+      "contacts",
+      {
+        id: record.id,
+        previousData: record,
+        data: {
+          freebieDelivered: true,
+          officeVisitedDate: new Date().toISOString().slice(0, 10),
+          updatedAt: new Date().toISOString(),
+        },
+      },
+      {
+        mutationMode: "optimistic",
+        onSuccess: () =>
+          notify("Freebie marked delivered", { type: "success" }),
+      },
+    );
   return (
-    <>
-      {/* We need to repeat the note creation sheet here to support the note 
-      create button that is rendered when there are no notes. */}
-      <NoteCreateSheet
-        open={noteCreateOpen}
-        onOpenChange={setNoteCreateOpen}
-        contact_id={record.id}
-      />
-      <ContactEditSheet
-        open={editOpen}
-        onOpenChange={setEditOpen}
-        contactId={record.id}
-      />
-      <MobileHeader>
-        <MobileBackButton />
-        <div className="flex flex-1 min-w-0">
-          <Link to="/contacts" className="flex-1 min-w-0">
-            <h1 className="truncate text-xl font-semibold">{defaultTitle}</h1>
-          </Link>
-        </div>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="rounded-full"
-          aria-label={translate("ra.action.edit")}
-          onClick={() => setEditOpen(true)}
-        >
-          <Pencil className="size-5" />
-        </Button>
-      </MobileHeader>
-      <MobileContent>
-        <div className="mb-6">
-          <div className="flex items-center mb-4">
-            <Avatar />
-            <div className="mx-3 flex-1">
-              <h2 className="text-2xl font-bold">
-                <RecordRepresentation />
-              </h2>
-              <div className="text-sm text-muted-foreground">
-                {record.title && record.company_id != null
-                  ? `${translate("resources.contacts.position_at", {
-                      title: record.title,
-                    })} `
-                  : record.title}
-                {record.company_id != null && (
-                  <ReferenceField
-                    source="company_id"
-                    reference="companies"
-                    link="show"
-                  >
-                    <TextField source="name" className="underline" />
-                  </ReferenceField>
-                )}
+    <div className="min-h-screen bg-slate-50 -m-4 p-4 md:p-8">
+      <div className="mx-auto max-w-5xl space-y-6">
+        <Card className="overflow-hidden rounded-3xl border-0 shadow-sm">
+          <div className="bg-gradient-to-br from-slate-950 to-blue-950 p-6 text-white md:p-8">
+            <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div>
+                <p className="text-sm uppercase tracking-[0.2em] text-blue-200">
+                  Realtor partner
+                </p>
+                <h1 className="mt-2 text-3xl font-bold md:text-5xl">
+                  {fullName(record)}
+                </h1>
+                <p className="mt-2 text-lg text-blue-100">
+                  {record.brokerage ?? "No brokerage added"}
+                </p>
               </div>
-            </div>
-            <div>
-              <ReferenceField
-                source="company_id"
-                reference="companies"
-                link="show"
-                className="no-underline"
+              <Button
+                asChild
+                size="lg"
+                className="h-12 rounded-2xl bg-white text-slate-950 hover:bg-blue-50"
               >
-                <CompanyAvatar />
-              </ReferenceField>
+                <Link to={`/contacts/${record.id}`}>
+                  {" "}
+                  <Edit className="mr-2" /> Edit
+                </Link>
+              </Button>
             </div>
           </div>
+          <CardContent className="grid gap-3 p-4 md:grid-cols-4 md:p-6">
+            {phone(record) && (
+              <Quick
+                href={`tel:${phone(record)}`}
+                icon={<Phone />}
+                label="Call Realtor"
+              />
+            )}
+            {email(record) && (
+              <Quick
+                href={`mailto:${email(record)}`}
+                icon={<Mail />}
+                label="Email Realtor"
+              />
+            )}
+            {record.website && (
+              <Quick
+                href={record.website}
+                icon={<Globe />}
+                label="Open Website"
+              />
+            )}
+            {record.facebookUrl && (
+              <Quick
+                href={record.facebookUrl}
+                icon={<Facebook />}
+                label="Facebook"
+              />
+            )}
+            {record.instagramUrl && (
+              <Quick
+                href={record.instagramUrl}
+                icon={<Instagram />}
+                label="Instagram"
+              />
+            )}
+            {record.googleBusinessUrl && (
+              <Quick
+                href={record.googleBusinessUrl}
+                icon={<MapPin />}
+                label="Google Business"
+              />
+            )}
+            <Button
+              size="lg"
+              variant={record.freebieDelivered ? "secondary" : "default"}
+              className="h-14 rounded-2xl"
+              onClick={markFreebie}
+            >
+              <Gift className="mr-2" />{" "}
+              {record.freebieDelivered
+                ? "Freebie delivered"
+                : "Mark freebie delivered"}
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="h-14 rounded-2xl"
+            >
+              <Link to={`/contacts/${record.id}`}>
+                <CalendarPlus className="mr-2" /> Update follow-up
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+
+        <div className="grid gap-6 md:grid-cols-3">
+          <Info
+            title="Follow-up"
+            value={
+              record.followUpDate
+                ? format(parseISO(record.followUpDate), "MMMM d, yyyy")
+                : "Not scheduled"
+            }
+          />
+          <Info
+            title="Referral count"
+            value={`${record.referralCount ?? 0}`}
+            icon={<Star className="text-amber-500" />}
+          />
+          <Info
+            title="Preferred contact"
+            value={record.preferredContactMethod ?? "Not set"}
+          />
         </div>
 
-        <Tabs defaultValue="notes" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 h-10">
-            <TabsTrigger value="notes">
-              {translate("resources.notes.name", { smart_count: 2 })}
-            </TabsTrigger>
-            <TabsTrigger value="tasks">
-              {translate("crm.common.task_count", {
-                smart_count: taskCount ?? 0,
-              })}
-            </TabsTrigger>
-            <TabsTrigger value="details">
-              {translate("crm.common.details")}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="notes" className="mt-2">
-            <InfiniteListBase
-              resource="contact_notes"
-              filter={{ contact_id: record.id }}
-              sort={{ field: "date", order: "DESC" }}
-              perPage={25}
-              disableSyncWithLocation
-              storeKey={false}
-              empty={
-                <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <p className="text-muted-foreground mb-4">
-                    {translate("resources.notes.empty")}
-                  </p>
-                  <Button
-                    variant="outline"
-                    onClick={() => setNoteCreateOpen(true)}
-                  >
-                    {translate("resources.notes.action.add")}
-                  </Button>
-                </div>
+        <Card className="rounded-3xl border-0 shadow-sm">
+          <CardHeader>
+            <CardTitle>Relationship notes</CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-4 md:grid-cols-2">
+            <Detail
+              label="Office visited"
+              value={
+                record.officeVisitedDate
+                  ? format(parseISO(record.officeVisitedDate), "MMMM d, yyyy")
+                  : "Not recorded"
               }
-              loading={false}
-              error={false}
-              queryOptions={{
-                onError: () => {
-                  /** override to hide notification as error case is handled by NotesIteratorMobile */
-                },
-              }}
-            >
-              <NotesIteratorMobile contactId={record.id} showStatus />
-            </InfiniteListBase>
-          </TabsContent>
-
-          <TabsContent value="tasks" className="mt-4">
-            <ContactTasksList />
-          </TabsContent>
-
-          <TabsContent value="details" className="mt-4">
-            <div className="space-y-6">
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {translate("resources.notes.fields.status")}
-                </h3>
-                <Separator />
-                <div className="mt-3">
-                  <ContactStatusSelector />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {translate(
-                    "resources.contacts.field_categories.personal_info",
-                  )}
-                </h3>
-                <Separator />
-                <div className="mt-3">
-                  <ContactPersonalInfo />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {translate(
-                    "resources.contacts.field_categories.background_info",
-                  )}
-                </h3>
-                <Separator />
-                <div className="mt-3">
-                  <ContactBackgroundInfo />
-                </div>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold">
-                  {translate("resources.tags.name", { smart_count: 2 })}
-                </h3>
-                <Separator />
-                <div className="mt-3">
-                  <TagsListEdit />
-                </div>
-              </div>
-            </div>
-          </TabsContent>
-        </Tabs>
-      </MobileContent>
-    </>
-  );
-};
-
-const ContactShowContent = () => {
-  const translate = useTranslate();
-  const { record, isPending } = useShowContext<Contact>();
-  if (isPending || !record) return null;
-
-  return (
-    <div className="mt-2 mb-2 flex gap-8">
-      <div className="flex-1">
-        <Card>
-          <CardContent>
-            <div className="flex">
-              <Avatar />
-              <div className="ml-2 flex-1">
-                <h5 className="text-xl font-semibold">
-                  <RecordRepresentation />
-                </h5>
-                <div className="inline-flex text-sm text-muted-foreground">
-                  {record.title && record.company_id != null
-                    ? `${translate("resources.contacts.position_at", {
-                        title: record.title,
-                      })} `
-                    : record.title}
-                  {record.company_id != null && (
-                    <ReferenceField
-                      source="company_id"
-                      reference="companies"
-                      link="show"
-                    >
-                      &nbsp;
-                      <TextField source="name" />
-                    </ReferenceField>
-                  )}
-                </div>
-              </div>
-              <div>
-                <ReferenceField
-                  source="company_id"
-                  reference="companies"
-                  link="show"
-                  className="no-underline"
-                >
-                  <CompanyAvatar />
-                </ReferenceField>
-              </div>
-            </div>
-            <InfiniteListBase
-              resource="contact_notes"
-              filter={{ contact_id: record.id }}
-              sort={{ field: "date", order: "DESC" }}
-              perPage={25}
-              disableSyncWithLocation
-              storeKey={false}
-              empty={
-                <NoteCreate reference="contacts" showStatus className="mt-4" />
-              }
-            >
-              <NotesIterator reference="contacts" showStatus />
-            </InfiniteListBase>
+            />
+            <Detail label="Gift/freebie left" value={record.giftFreebieLeft} />
+            <Detail
+              label="Brokerage office address"
+              value={record.brokerageOfficeAddress}
+            />
+            <Detail label="Notes" value={record.notes ?? record.background} />
           </CardContent>
         </Card>
       </div>
-      <ContactAside />
     </div>
   );
 };
+
+const Quick = ({
+  href,
+  icon,
+  label,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  label: string;
+}) => (
+  <Button
+    asChild
+    size="lg"
+    variant="outline"
+    className="h-14 rounded-2xl justify-start"
+  >
+    <a
+      href={href}
+      target={href.startsWith("http") ? "_blank" : undefined}
+      rel="noreferrer"
+    >
+      {icon}
+      <span className="ml-2">{label}</span>
+    </a>
+  </Button>
+);
+const Info = ({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: string;
+  icon?: React.ReactNode;
+}) => (
+  <Card className="rounded-3xl border-0 shadow-sm">
+    <CardContent className="p-5">
+      <p className="text-sm text-slate-500">{title}</p>
+      <p className="mt-2 flex items-center gap-2 text-2xl font-bold text-slate-950">
+        {icon}
+        {value}
+      </p>
+    </CardContent>
+  </Card>
+);
+const Detail = ({ label, value }: { label: string; value?: string | null }) => (
+  <div className="rounded-2xl bg-slate-50 p-4">
+    <p className="text-sm font-medium text-slate-500">{label}</p>
+    <p className="mt-1 whitespace-pre-wrap text-slate-950">{value || "—"}</p>
+  </div>
+);

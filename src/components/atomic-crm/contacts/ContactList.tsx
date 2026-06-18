@@ -43,7 +43,7 @@ export const ContactList = () => {
       title={false}
       actions={<ContactListActions />}
       perPage={25}
-      sort={{ field: "last_seen", order: "DESC" }}
+      sort={{ field: "followUpDate", order: "ASC" }}
       exporter={exporter}
     >
       <ContactListLayoutDesktop />
@@ -86,7 +86,9 @@ const ContactBulkActionButtons = () => (
 
 const ContactListActions = () => (
   <TopToolbar>
-    <SortButton fields={["first_name", "last_name", "last_seen"]} />
+    <SortButton
+      fields={["first_name", "brokerage", "followUpDate", "referralCount"]}
+    />
     <ContactImportButton />
     <ExportButton exporter={exporter} />
     <CreateButton />
@@ -100,7 +102,7 @@ export const ContactListMobile = () => {
   return (
     <InfiniteListBase
       perPage={25}
-      sort={{ field: "last_seen", order: "DESC" }}
+      sort={{ field: "followUpDate", order: "ASC" }}
       exporter={exporter}
       queryOptions={{
         onError: () => {
@@ -181,6 +183,6 @@ const exporter: Exporter<Contact> = async (records, fetchRelatedRecords) => {
     return exportedContact;
   });
   return jsonExport(contacts, {}, (_err: any, csv: string) => {
-    downloadCSV(csv, "contacts");
+    downloadCSV(csv, "inspector-pro-realtors");
   });
 };
